@@ -1,0 +1,323 @@
+/**
+ * CIS 120 Game HW
+ * (c) University of Pennsylvania
+ * @version 2.1, Apr 2017
+ */
+
+import java.awt.*;
+import java.awt.event.*;
+import java.io.IOException;
+
+import javax.swing.*;
+
+
+import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.LinkedList;
+import java.util.Queue;
+import java.util.TreeMap;
+
+/**
+ * GameCourt
+ * 
+ * This class holds the primary game logic for how different objects interact with one another. Take
+ * time to understand how the timer interacts with the different methods and how it repaints the GUI
+ * on every tick().
+ */
+@SuppressWarnings("serial")
+public class GameCourt extends JPanel {
+
+    public boolean playing = false; // whether the game is running 
+    private JLabel score_status;
+    private JLabel combo_status;
+
+    public static final int COURT_WIDTH = 640;
+    public static final int COURT_HEIGHT = 360;
+    public static final int SPEED = 8;
+   
+    private static int counter;
+    private static int endtimer;
+    private static boolean end;
+    private static int score;
+    private static int combo;
+    private static int[] PGOM;
+    
+    private static List<StoredNote> NOTES;
+    private static int tracker;
+    
+    
+    Map<Integer, Queue<Square>> PLAYS = new TreeMap<Integer, Queue<Square>>();
+    
+    
+    private SongController BAR;
+    HoldNote hn = new HoldNote(COURT_WIDTH, COURT_HEIGHT, Color.BLACK, 'o', 40, 80);
+    
+    // Update interval for timer, in milliseconds
+    public static final int INTERVAL = 25; //40 in a second
+    
+    public static void fill(Map<Integer, Queue<Square>> empty) {
+    	empty.put((int)'q', new LinkedList<Square>());
+    	empty.put((int)'w', new LinkedList<Square>());
+    	empty.put((int)'e', new LinkedList<Square>());
+    	empty.put((int)'i', new LinkedList<Square>());
+    	empty.put((int)'o', new LinkedList<Square>());
+    	empty.put((int)'p', new LinkedList<Square>());
+    }
+    
+    public static int getIndex (char c) {
+    	if (c == 'q') {return 0;}
+    	else if (c == 'w') {return 1;}
+    	else if (c == 'e') {return 2;}
+    	else if (c == 'i') {return 3;}
+    	else if (c == 'o') {return 4;}
+    	else if (c == 'p') {return 5;}
+    	else {return -1;}
+    }
+    
+    public static int getScore() {
+    	return score;
+    }
+    
+    public static int getCombo() {
+    	return combo;
+    }
+    
+    public static void setScore(int s) {
+    	score = s;
+    }
+    
+    public static void setCombo(int c) {
+    	combo = c;
+    }
+    
+    public static void incrPGOM(int i) {
+    	PGOM[i]++;
+    }
+    
+    public GameCourt(JLabel sc, JLabel cb) { //throws IOException {
+        // creates border around the court area, JComponent method
+        setBorder(BorderFactory.createLineBorder(Color.BLACK));
+        
+        fill(PLAYS);
+        
+        try{
+            SongParser c = SongParser.make("song");
+        	NOTES = c.getSheet();
+         }
+            catch (Exception e) {
+            	throw new RuntimeException("Exception Parsing File");
+            	//can change catch to catch both exceptions if need be
+         }
+        
+        // The timer is an object which triggers an action periodically with the given INTERVAL. We
+        // register an ActionListener with this timer, whose actionPerformed() method is called each
+        // time the timer triggers. We define a helper method called tick() that actually does
+        // everything that should be done in a single timestep.
+        Timer timer = new Timer(INTERVAL, new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                tick();
+            }
+        });
+        timer.start(); // MAKE SURE TO START THE TIMER!
+
+        // Enable keyboard focus on the court area.
+        // When this component has the keyboard focus, key events are handled by its key listener.
+        setFocusable(true);
+
+        
+        addKeyListener(new KeyAdapter() {
+            public void keyPressed(KeyEvent e) {
+                if (e.getKeyCode() == KeyEvent.VK_W) {
+                	SongController.pressed[1] = true;
+                    if(!PLAYS.get((int)'w').isEmpty()){
+                    	if (PLAYS.get((int)'w').peek().handle(BAR.getYpos())) {
+                    		PLAYS.get((int)'w').remove();
+                    		SongController.timers[getIndex('w')] = 3;
+                    	}
+                    }  
+                }
+                else if (e.getKeyCode() == KeyEvent.VK_Q) {
+                	SongController.pressed[0] = true;
+                    if(!PLAYS.get((int)'q').isEmpty()){
+                    	if (PLAYS.get((int)'q').peek().handle(BAR.getYpos())) {
+                    		PLAYS.get((int)'q').remove();
+                    		SongController.timers[getIndex('q')] = 3;
+                    	}
+                    }  
+                }
+                else if (e.getKeyCode() == KeyEvent.VK_E) {
+                	SongController.pressed[2] = true;
+                    if(!PLAYS.get((int)'e').isEmpty()){
+                    	if (PLAYS.get((int)'e').peek().handle(BAR.getYpos())) {
+                    		PLAYS.get((int)'e').remove();
+                    		SongController.timers[getIndex('e')] = 3;
+                    	}
+                    }  
+                }
+                else if (e.getKeyCode() == KeyEvent.VK_I) {
+                	SongController.pressed[3] = true;
+                    if(!PLAYS.get((int)'i').isEmpty()){
+                    	if (PLAYS.get((int)'i').peek().handle(BAR.getYpos())) {
+                    		PLAYS.get((int)'i').remove();
+                    		SongController.timers[getIndex('i')] = 3;
+                    	}
+                    }  
+                }
+                else if (e.getKeyCode() == KeyEvent.VK_O) {
+                	SongController.pressed[4] = true;
+                    if(!PLAYS.get((int)'o').isEmpty()){
+                    	if (PLAYS.get((int)'o').peek().handle(BAR.getYpos())) {
+                    		PLAYS.get((int)'o').remove();
+                    		SongController.timers[getIndex('o')] = 3;
+                    	}
+                    }  
+                }
+                else if (e.getKeyCode() == KeyEvent.VK_P) {
+                	SongController.pressed[5] = true;
+                    if(!PLAYS.get((int)'p').isEmpty()){
+                    	if (PLAYS.get((int)'p').peek().handle(BAR.getYpos())) {
+                    		PLAYS.get((int)'p').remove();
+                    		SongController.timers[getIndex('p')] = 3;
+                    	}
+                    }  
+                }
+                
+            }
+
+            public void keyReleased(KeyEvent e) {
+            	if (e.getKeyCode() == KeyEvent.VK_W) {
+                	SongController.pressed[1] = false;
+                	}
+            	else if (e.getKeyCode() == KeyEvent.VK_Q) {
+            		SongController.pressed[0] = false;
+                	}
+            	else if (e.getKeyCode() == KeyEvent.VK_E) {
+            		SongController.pressed[2] = false;
+                	}
+            	else if (e.getKeyCode() == KeyEvent.VK_I) {
+            		SongController.pressed[3] = false;
+                	}
+            	else if (e.getKeyCode() == KeyEvent.VK_O) {
+            		SongController.pressed[4] = false;
+                	}
+            	else if (e.getKeyCode() == KeyEvent.VK_P) {
+            		SongController.pressed[5] = false;
+                	}
+            }
+        });
+
+        this.score_status = sc;
+        this.combo_status = cb;
+    }
+    //--------------------------
+
+    /**
+     * (Re-)set the game to its initial state.
+     */
+    public void reset() {
+    	BAR = new SongController(Color.WHITE, COURT_WIDTH);
+
+    	PLAYS = new TreeMap<Integer, Queue<Square>>();
+    	fill(PLAYS);
+    	
+    	counter = 0;
+    	tracker = 0;
+    	endtimer = 60;
+    	end = false;
+    	score = 0;
+    	combo = 0;
+    	PGOM = new int[4];
+
+        playing = true;
+        score_status.setText("Score: "+ score);
+        combo_status.setText("Combo: "+ combo);
+
+        // Make sure that this component has the keyboard focus
+        requestFocusInWindow();
+    }
+
+    /**
+     * This method is called every time the timer defined in the constructor triggers.
+     */
+    void tick() {
+        if (playing) {
+        	
+            for (Integer q : PLAYS.keySet()){
+	            for (Square s : PLAYS.get(q)) {
+	            	s.move();
+	            }
+	            
+	            if (!PLAYS.get(q).isEmpty() && PLAYS.get(q).peek().isOut()){
+	            	PLAYS.get(q).remove();
+	            	combo = 0;
+	            	incrPGOM(3);
+	            	//System.out.println("Removed");
+	            }
+            }
+            
+            if (counter >39 && hn != null){
+            	hn.move();
+            }
+
+            
+            if (tracker < NOTES.size()) {
+            	try {
+	            while (NOTES.get(tracker).getTime() == counter){
+	            	char k = NOTES.get(tracker).getKey();
+	            	Square s = new Square(COURT_WIDTH, COURT_HEIGHT, Color.BLACK, k, NOTES.get(tracker).getTime());
+	            	PLAYS.get((int)k).add(s);
+	            	tracker++;
+	            }
+            	} catch (Exception n){
+            		//System.out.println("end");
+            		end = true;
+            	}
+            }
+//            else {
+//            	playing = false;
+//                status.setText("Score:");
+//            }
+            score_status.setText("Score: "+ score);
+            combo_status.setText("Combo: "+ combo);
+            
+            if (end) {
+            	if (endtimer != 0){
+            		endtimer--;
+            	}
+            	else {
+            		playing = false;
+            		score_status.setText("Final Score: " + score);
+            		combo_status.setText("Perfect/Good/OK/Miss: " + PGOM[0] + " / "
+									            				+ PGOM[1] + " / "
+									            				+ PGOM[2] + " / "
+									            				+ PGOM[3]);
+            	}
+            }
+            counter ++;
+            
+            // update the display
+            repaint();
+        }
+    }
+
+    @Override
+    public void paintComponent(Graphics g) {
+        super.paintComponent(g);
+        for (Integer q : PLAYS.keySet()){
+            for (Square s : PLAYS.get(q)) {
+            	s.draw(g);
+            }
+        }
+        BAR.draw(g);
+        if (counter >39 && hn != null){
+        	hn.draw(g);
+        }
+    }
+    
+
+    @Override
+    public Dimension getPreferredSize() {
+        return new Dimension(COURT_WIDTH, COURT_HEIGHT);
+    }
+}

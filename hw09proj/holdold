@@ -1,0 +1,117 @@
+import java.awt.*;
+
+public class HoldNote extends GameObj{
+	public static final int WIDTH = 85;
+    public static final int HEIGHT = 20;
+    //public static final int INIT_POS_X = 0;
+    //public static final int INIT_POS_Y = calc(GameCourt.SPEED, (end - start)) -HEIGHT;
+    public static final int INIT_VEL_X = 0;
+    //public static final int INIT_VEL_Y = 8;
+    private char key;
+    private int starttime;
+    private int endtime;
+    private int startPy = -HEIGHT;
+    private int cw;
+    private int ch;
+    //THIS.GETPY = TOPRIGHT CORNER
+
+    private Color color;
+
+    /**
+    * Note that, because we don't need to do anything special when constructing a Square, we simply
+    * use the superclass constructor called with the correct parameters.
+    */
+    public HoldNote(int courtWidth, int courtHeight, Color color, char key, int start, int end) {
+        super(INIT_VEL_X, GameCourt.SPEED, 0, -calc(GameCourt.SPEED, (end - start)) - HEIGHT, WIDTH, HEIGHT, courtWidth, courtHeight);
+        if (key == 'q') {this.setPx(15);}
+        else if (key == 'w') {this.setPx(110);}
+        else if (key == 'e') {this.setPx(205);}
+        else if (key == 'i') {this.setPx(350);}
+        else if (key == 'o') {this.setPx(445);}
+        else if (key == 'p') {this.setPx(540);}
+        this.key = key;
+        this.starttime = start;
+        this.endtime = end;
+        this.color = color;
+        this.cw = courtWidth;
+        this.ch = courtHeight;
+        //System.out.println((-calc(GameCourt.SPEED, (end - start)) -HEIGHT));
+    }
+    
+    public static int calc(int speed, int duration){
+    	return speed * duration;
+    }
+    
+    @Override
+    public void move() {
+        this.setPx(this.getPx() + this.getVx());
+        //this.setPy(Math.max(this.getPy() + this.getVy(),0));
+        //startPy = Math.min(this.getPy() + this.getVy(),cw);
+        this.setPy(this.getPy() + this.getVy());
+        startPy = startPy + this.getVy();
+    }
+    
+    @Override
+    public void draw(Graphics g) {
+    	//if (!this.isOut()){
+    		g.setColor(this.color);
+    		int y = Math.max(this.getPy(),0);
+    		int h = Math.min(startPy + HEIGHT,ch) - y;
+    		g.fillRect(this.getPx(), y, this.getWidth(), h);
+    		//System.out.println(this.getPy());
+    	//}
+    }
+    
+    public int getStartTime(){
+		return this.starttime;
+	}
+    
+    public int getEndTime(){
+		return this.endtime;
+	}
+	
+	public char getKey(){
+		return this.key;
+	}
+    
+    public boolean handle(int ypos){
+//    	if (this.getPy() + (HEIGHT/2) > (ypos - 75) && this.getPy() + (HEIGHT/2) < (ypos + 25)){
+//    		//System.out.println("hit");
+//    		int add;
+//    		double mult = GameCourt.getCombo() * 0.1;
+//    		int diff = Math.abs(this.getPy() + (HEIGHT/2) - ypos);
+//    		if (diff < 15){
+//    			SongController.fx[GameCourt.getIndex(key)] = Scoring.PERFECT;
+//    			System.out.println("Perfect");
+//    			GameCourt.incrPGOM(0);
+//    			GameCourt.setCombo(GameCourt.getCombo()+1);
+//    			add = (int)(mult * 2);
+//    		}
+//    		else if (diff < 25){
+//    			SongController.fx[GameCourt.getIndex(key)] = Scoring.GOOD;
+//    			System.out.println("Good");
+//    			GameCourt.incrPGOM(1);
+//    			GameCourt.setCombo(GameCourt.getCombo()+1);
+//    			add = (int)(mult * 1.5);
+//    		}
+//    		else if (diff < 40){
+//    			SongController.fx[GameCourt.getIndex(key)] = Scoring.OK;
+//    			System.out.println("OK");
+//    			GameCourt.incrPGOM(2);
+//    			GameCourt.setCombo(GameCourt.getCombo()+1);
+//    			add = (int)(mult * 1);
+//    		}
+//    		else {
+//    			SongController.fx[GameCourt.getIndex(key)] = Scoring.MISS;
+//    			System.out.println("MISS");
+//    			GameCourt.incrPGOM(3);
+//    			GameCourt.setCombo(0);
+//    			add = 0;
+//    		}
+//    		GameCourt.setScore(GameCourt.getScore() + 1 + add);
+//    		System.out.println(GameCourt.getScore());
+//    		return true;
+//    	}
+    	return false;
+    }
+}

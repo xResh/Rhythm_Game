@@ -1,0 +1,92 @@
+import java.util.*;
+import java.awt.Color;
+import java.io.*;
+
+public class SongParser {
+	private BufferedReader in;
+	public Queue<Square> SHEET = new LinkedList<>();
+	
+	private static int courtWidth;
+    private static int courtHeight;
+
+  @SuppressWarnings("serial")
+  public static class FormatException extends Exception {
+    public FormatException(String msg) {
+      super(msg);
+    }
+  }
+
+  
+  public SongParser(Reader r) throws IOException, FormatException {
+	  if (r == null) {
+		  throw new IllegalArgumentException();
+	  }
+	  in = new BufferedReader(r);
+	  String str = in.readLine();
+	  try {
+		  while(!(str == null)){
+			  if (!isValid(str)){ //TAKES A LONG TIME?
+				  throw new FormatException("bad format");
+			  }
+			  str = str.trim();
+			  int coma = str.lastIndexOf(',');
+			  int val = 0;
+			  try {
+				  val = Integer.parseInt(str.substring(0,coma));
+			  }
+			  catch (NumberFormatException e) {
+				  throw new FormatException("bad format");
+			  }
+			  char k = str.charAt(str.length()-1);
+			  //line has been validated now
+			  SHEET.add(new Square(courtWidth, courtHeight, Color.BLACK, k, val));
+			  str = in.readLine();
+		  }
+	  } catch (IOException e) {
+	  }
+  }
+
+  /** Construct a FileCorrector from a file.
+   *
+   * @param filename of file to read from
+   * @throws IOException if error while reading
+   * @throws FileCorrector.FormatException for an invalid line
+   * @throws FileNotFoundException if file cannot be opened
+   */
+  public static SongParser make(String filename, int cw, int ch) throws IOException, FormatException {
+	  courtWidth = cw;
+	  courtHeight = ch;
+	  Reader r = new FileReader(filename);
+	  SongParser fc;
+	  try {
+			fc = new SongParser(r);
+	  } finally {
+	      if (r != null) { r.close(); }
+     }
+	  return fc;
+  }
+  
+  public static boolean isValid (String line){
+	  if (line == null || line.equals("")){
+		  return false;
+	  }
+	  line = line.trim();
+	  if (!line.contains(",")){
+		  return false;
+	  }
+	  int ind = line.lastIndexOf(',');
+	  if (ind == 0 || ind == (line.length()-1)){
+		 return false; 
+	  }
+	  //String before = line.substring(0,ind);
+	  //return !before.contains(",");
+	  String after = line.substring(ind+1);
+	  //System.out.println(after);
+	  return (after.equals("q") || after.equals("w") || after.equals("e") || 
+			  after.equals("i") || after.equals("o") || after.equals("p"));
+  }
+
+  public Queue<Square> getSheet() {
+  	return SHEET;
+  }
+}
