@@ -93,7 +93,6 @@ public class SongController {
   						break;	
         	case EMPTY: break;
         	}
-        	//fx[i] = Scoring.EMPTY;
         }
     }
 	
