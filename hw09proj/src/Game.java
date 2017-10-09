@@ -1,10 +1,3 @@
-/**
- * CIS 120 Game HW
- * (c) University of Pennsylvania
- * @version 2.1, Apr 2017
- */
-
-// imports necessary libraries for Java swing
 import java.awt.*;
 import java.awt.event.*;
 import java.util.*;
@@ -15,10 +8,6 @@ import java.io.*;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
-
-/**
- * Game Main class that specifies the frame and widgets of the GUI
- */
 
 public class Game implements Runnable {
 	
@@ -35,11 +24,7 @@ public class Game implements Runnable {
 	}
 
     public void run() {
-        // NOTE : recall that the 'final' keyword notes immutability even for local variables.
-
-        // Top-level frame in which game components live
-        // Be sure to change "TOP LEVEL FRAME" to the name of your game
-        final JFrame frame = new JFrame("When you ponder inner suffering as human artform but remember the memories");
+        final JFrame frame = new JFrame("Rhythm Game");
         frame.setResizable(false);
         frame.setLocation(300, 100);
 
@@ -68,10 +53,7 @@ public class Game implements Runnable {
         final JPanel control_panel = new JPanel();
         control_panel.setBackground(Color.BLACK);
         frame.add(control_panel, BorderLayout.NORTH);
-
-        // Note here that when we add an action listener to the reset button, we define it as an
-        // anonymous inner class that is an instance of ActionListener with its actionPerformed()
-        // method overridden. When the button is pressed, actionPerformed() will be called.
+	    
         final JButton reset = new JButton("Play");
         reset.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -80,33 +62,18 @@ public class Game implements Runnable {
         });
         control_panel.add(reset);
 
-        // Put the frame on the screen
         frame.pack();
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setVisible(true);
 
-        // Start game
-//        try {
-//        	InputStream in = new FileInputStream("Jakubi - Holiday.wav");
-//        	AudioStream as = new AudioStream(in);
-//        	//AudioPlayer.player.start(as);
-//        	court.SetAudio(as);
-//        }
-//        catch(Exception e){
-//        	System.out.println("FileNotFound");
-//        }
-        //court.reset();
         court.instruct(reset);
     }
     
 	private static SongParser getParser(Scanner sc) {
-	    //return sc.next();
 		while (true) {
 		      try {
 		        String response = sc.nextLine();
 		        SongParser c = SongParser.make(response);
-		        //List<StoredNote> NOTES = c.getSheet();
-	        	//int numNotes = c.getNum();
 		        return c;
 		      } catch (Exception e) {
 		        //something bad, prompt again
@@ -119,7 +86,6 @@ public class Game implements Runnable {
 		while (true) {
 			try {
 				String response = sc.nextLine();
-		    	//InputStream in = new FileInputStream("ConceptOfReality.wav");
 				if (response.equals("")){
 					return null;
 				}
@@ -149,10 +115,7 @@ public class Game implements Runnable {
 	    }
 	  }
 
-    /**
-     * Main method run to start and run the game. Initializes the GUI elements specified in Game and
-     * runs it. IMPORTANT: Do NOT delete! You MUST include this in your final submission.
-     */
+    //main method
     public static void main(String[] args) {
     	Scanner sc = new Scanner(System.in);
 		System.out.println("Enter in the filename of your notemap (.txt) file: ");
