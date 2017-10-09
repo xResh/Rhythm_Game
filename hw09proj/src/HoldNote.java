@@ -12,14 +12,9 @@ public class HoldNote extends Note{
     public boolean hit = false;
     private int lockedPy;
     private boolean awardedpointsforhold  = false;
-    //THIS.GETPY = TOPRIGHT CORNER
 
     private Color color;
 
-    /**
-    * Note that, because we don't need to do anything special when constructing a Square, we simply
-    * use the superclass constructor called with the correct parameters.
-    */
     public HoldNote(int courtWidth, int courtHeight, Color color, char key, int start, int end) {
         super(GameCourt.SPEED, 0, -calc(GameCourt.SPEED, (end - start)) , WIDTH, HEIGHT, 
         		key, courtWidth, courtHeight, true);
@@ -47,9 +42,7 @@ public class HoldNote extends Note{
     			if (color != Color.DARK_GRAY){
     				this.color = Color.DARK_GRAY;
     				GameCourt.incrPGOM(3);
-    				//System.out.println("3");
     				GameCourt.incrPGOM(3);
-    				//System.out.println("4");
         			GameCourt.setCombo(0);
     			}
     		}
@@ -59,7 +52,6 @@ public class HoldNote extends Note{
     			h = Math.max(lockedPy - y,0);
     			if (h == 0){
     				this.setPy(ch);
-    				//System.out.println("ew");
     				awardedpointsforhold = true;
     				GameCourt.incrPGOM(0);
     				GameCourt.setCombo(GameCourt.getCombo()+1);
@@ -68,8 +60,6 @@ public class HoldNote extends Note{
     			}
     		}
     		g.fillRect(this.getPx(), y, this.getWidth(), h);
-    		//System.out.println(this.getPy());
-    	//}
     }
     
     public int getStartTime(){
@@ -84,7 +74,6 @@ public class HoldNote extends Note{
     public boolean handle(int ypos, boolean ispress){
     	if (!hit && ispress){
     	if (startPy + (HEIGHT/2) > (ypos - 75) && startPy + (HEIGHT/2) < (ypos + 25)){
-    		//System.out.println(startPy + (HEIGHT/2));
     		lockedPy = startPy + HEIGHT;
     		hit = true;
     		SongController.timers[GameCourt.getIndex(this.getKey())] = 3;
@@ -94,48 +83,40 @@ public class HoldNote extends Note{
     		int diff = Math.abs(startPy + (HEIGHT/2) - ypos);
     		if (diff < 15){
     			SongController.fx[GameCourt.getIndex(this.getKey())] = Scoring.PERFECT;
-    			//System.out.println("Perfect");
     			GameCourt.incrPGOM(0);
     			GameCourt.setCombo(GameCourt.getCombo()+1);
     			add = (int)(mult * 2);
     		}
     		else if (diff < 25){
     			SongController.fx[GameCourt.getIndex(this.getKey())] = Scoring.GOOD;
-    			//System.out.println("Good");
     			GameCourt.incrPGOM(1);
     			GameCourt.setCombo(GameCourt.getCombo()+1);
     			add = (int)(mult * 1.5);
     		}
     		else if (diff < 40){
     			SongController.fx[GameCourt.getIndex(this.getKey())] = Scoring.OK;
-    			//System.out.println("OK");
     			GameCourt.incrPGOM(2);
     			GameCourt.setCombo(GameCourt.getCombo()+1);
     			add = (int)(mult * 1);
     		}
     		else {
     			SongController.fx[GameCourt.getIndex(this.getKey())] = Scoring.MISS;
-    			//System.out.println("MISS");
     			GameCourt.incrPGOM(3);
     			GameCourt.incrPGOM(3);
-    			//System.out.println("1");
     			GameCourt.setCombo(0);
     			add = 0;
     			return true;
     		}
     		GameCourt.setScore(GameCourt.getScore() + 1 + add);
-    		//System.out.println(GameCourt.getScore());
     		return false;
     	}
     	}
     	else if (hit && !ispress){
     		//RELEASE EVENT BEFORE ITS REMOVED COMPLETELY
-    		//System.out.println("ew");
     		int diff = Math.abs(this.getPy() - lockedPy);//distance from where u first hit
     		int diff2 = Math.abs(this.getPy() - ypos);//distance from line
     		diff = Math.min(diff, diff2);//mercy in case you hit under line
     		if (diff < 80) {
-    			//System.out.println("handle");
     			if (!awardedpointsforhold){
     			GameCourt.incrPGOM(0); //get a perfect as long as you release close to end
     			GameCourt.setCombo(GameCourt.getCombo()+1);
@@ -145,9 +126,7 @@ public class HoldNote extends Note{
     		}
     		else {
     			GameCourt.incrPGOM(3);
-    			//System.out.println("2");
     			GameCourt.setCombo(0);
-    			//System.out.println(diff);
     		}
     		return true;
     	}
