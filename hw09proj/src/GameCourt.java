@@ -1,9 +1,3 @@
-/**
- * CIS 120 Game HW
- * (c) University of Pennsylvania
- * @version 2.1, Apr 2017
- */
-
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.image.BufferedImage;
@@ -21,13 +15,6 @@ import java.util.LinkedList;
 import java.util.Queue;
 import java.util.TreeMap;
 
-/**
- * GameCourt
- * 
- * This class holds the primary game logic for how different objects interact with one another. Take
- * time to understand how the timer interacts with the different methods and how it repaints the GUI
- * on every tick().
- */
 @SuppressWarnings("serial")
 public class GameCourt extends JPanel {
 
@@ -118,11 +105,9 @@ public class GameCourt extends JPanel {
     	if (playedNotes == numNotes){
     		end = true;
     	}
-    	//System.out.println(i);
     }
     
-    public GameCourt(JLabel sc, JLabel cb, Clip cl, int num, List<StoredNote> notes, int speed) { //throws IOException {
-        // creates border around the court area, JComponent method
+    public GameCourt(JLabel sc, JLabel cb, Clip cl, int num, List<StoredNote> notes, int speed) {
         setBorder(BorderFactory.createLineBorder(Color.BLACK));
         
         fill(PLAYS);
@@ -132,16 +117,6 @@ public class GameCourt extends JPanel {
         SPEED = speed;
         
         
-//        try{
-//            SongParser c = SongParser.make("concept");
-//        	NOTES = c.getSheet();
-//        	this.numNotes = c.getNum();
-//         }
-//            catch (Exception e) {
-//            	throw new RuntimeException("Exception Parsing File");
-//            	//can change catch to catch both exceptions if need be
-//         }
-        
         try {
             if (instructions == null) {
                 instructions = ImageIO.read(new File(instructionsFile));
@@ -150,19 +125,14 @@ public class GameCourt extends JPanel {
             System.out.println("Internal Error:" + e.getMessage());
         }
         
-        // The timer is an object which triggers an action periodically with the given INTERVAL. We
-        // register an ActionListener with this timer, whose actionPerformed() method is called each
-        // time the timer triggers. We define a helper method called tick() that actually does
-        // everything that should be done in a single timestep.
+	//timer
         Timer timer = new Timer(INTERVAL, new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 tick();
             }
         });
-        timer.start(); // MAKE SURE TO START THE TIMER!
+        timer.start(); //START THE TIMER!
 
-        // Enable keyboard focus on the court area.
-        // When this component has the keyboard focus, key events are handled by its key listener.
         setFocusable(true);
 
         
@@ -179,7 +149,6 @@ public class GameCourt extends JPanel {
                 }
                 else if (e.getKeyCode() == KeyEvent.VK_Q) {
                 	SongController.pressed[0] = true;
-                	//System.out.println(counter+70);
                     if(!PLAYS.get((int)'q').isEmpty()){
                     	if (PLAYS.get((int)'q').peek().handle(BAR.getYpos(), true)) {
                     		PLAYS.get((int)'q').remove();
@@ -288,9 +257,7 @@ public class GameCourt extends JPanel {
      */
     public void reset() {
     	playbutton.setText("Retry");
-    	//AudioPlayer.player.stop(mainmusic);
     	if (mainmusic != null){
-    		//mainmusic.stop();
         	mainmusic.setFramePosition(0);
         	mainmusic.stop();
     	}
@@ -314,20 +281,15 @@ public class GameCourt extends JPanel {
         score_status.setText("Score: "+ score);
         combo_status.setText("Combo: "+ combo);
 
-        // Make sure that this component has the keyboard focus
         requestFocusInWindow();
     }
     
     public void instruct(JButton button){
-//    	Graphics g = this.getGraphics();
-//    	g.drawImage(instructions,0, 0, COURT_WIDTH,COURT_HEIGHT, null);
     	this.playbutton = button;
     	repaint();
     }
 
-    /**
-     * This method is called every time the timer defined in the constructor triggers.
-     */
+    //EVERY TICK
     void tick() {
         if (playing) {
         	
@@ -340,11 +302,8 @@ public class GameCourt extends JPanel {
 	            	if (!PLAYS.get(q).peek().isHold()){
 	            		combo = 0;
 	            		incrPGOM(3);
-	            		//System.out.println("5");
-	            		//System.out.println("rip");
 	            	}
 	            	PLAYS.get(q).remove();
-	            	//System.out.println("Removed");
 	            }
             }
             
@@ -356,18 +315,15 @@ public class GameCourt extends JPanel {
 	            	if (NOTES.get(tracker).isHold()){
 	            		s = new HoldNote(COURT_WIDTH, COURT_HEIGHT, Color.BLACK, k, 
 	            				(int)(NOTES.get(tracker).getStartTime() * SYNCFACTOR), (int)(NOTES.get(tracker).getEndTime() * SYNCFACTOR));;
-	            				//System.out.println("hold");
 	            	}
 	            	else {
 	            		s = new TapNote(COURT_WIDTH, COURT_HEIGHT, Color.BLACK, k, NOTES.get(tracker).getStartTime());
-	            		//System.out.println("tap");
+
 	            	}
 	            	PLAYS.get((int)k).add(s);
 	            	tracker++;
 	            }
             	} catch (Exception n){
-            		//System.out.println("end");
-            		//end = true;
             	}
             }
             score_status.setText("Score: "+ score);
@@ -411,9 +367,7 @@ public class GameCourt extends JPanel {
             	s.draw(g);
             }
         }
-        //if (BAR != null){
         	BAR.draw(g);
-        //}
         }
     }
     
