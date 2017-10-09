@@ -47,7 +47,6 @@ public class SongParser {
 							  throw new NumberFormatException();
 						  }
 						  num = num+2;
-						  //System.out.println(val1 + "'" + val2);
 					  }
 					  catch (NumberFormatException e) {
 						  throw new FormatException("bad format");
@@ -57,7 +56,6 @@ public class SongParser {
 					  try {
 						  val1 = Integer.parseInt(str.substring(0,coma).trim());
 						  num++;
-						  //System.out.println(val1);
 					  }
 					  catch (NumberFormatException e) {
 						  throw new FormatException("bad format");
@@ -79,13 +77,7 @@ public class SongParser {
 	  }
   }
 
-  /** Construct a FileCorrector from a file.
-   *
-   * @param filename of file to read from
-   * @throws IOException if error while reading
-   * @throws FileCorrector.FormatException for an invalid line
-   * @throws FileNotFoundException if file cannot be opened
-   */
+	
   public static SongParser make(String filename) throws IOException, FormatException {
 	  Reader r = new FileReader(filename);
 	  SongParser fc;
@@ -102,9 +94,6 @@ public class SongParser {
   }
   
   public static boolean isValid (String line){
-//	  if (line == null || line.equals("")){
-//		  return false;
-//	  }
 	  line = line.trim();
 	  if (!line.contains(",")){
 		  return false;
